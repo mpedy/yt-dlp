@@ -53,6 +53,7 @@ The only reliable way to check if a site is supported is to try it.
  - **agalega:videos**
  - **AirTV**
  - **AitubeKZVideo**
+ - **Alibaba**
  - **AliExpressLive**
  - **AlJazeera**
  - **Allocine**
@@ -734,7 +735,7 @@ The only reliable way to check if a site is supported is to try it.
  - **loc**: Library of Congress
  - **Loco**
  - **loom**
- - **loom:folder**
+ - **loom:folder**: (**Currently broken**)
  - **LoveHomePorn**
  - **LRTRadio**
  - **LRTStream**
@@ -1380,7 +1381,7 @@ The only reliable way to check if a site is supported is to try it.
  - **Spiegel**
  - **Sport5**
  - **SportBox**: (**Currently broken**)
- - **SportDeutschland**
+ - **sporteurope**
  - **Spreaker**
  - **SpreakerShow**
  - **SpringboardPlatform**
