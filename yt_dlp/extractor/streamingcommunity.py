@@ -44,9 +44,10 @@ class StreamingCommunityIE(InfoExtractor):
         streams = self._parse_json(
             self._search_regex(r'window\.streams\s*=\s*(\[.+?\]);', webpage_iframe_final, 'streams', default='[]'),
             video_id, fatal=False) or []
-        source_url = unescapeHTML(traverse_obj(streams, (
-            lambda _, v: v.get('active') and v.get('url'), {str}), get_all=False) or source_url).replace('\\/', '/')
-        source_url = update_url_query(source_url, {
+        source_url = unescapeHTML(
+            traverse_obj(streams, (lambda _, v: v.get('active') and v.get('url')), get_all=False).get("url") or source_url).replace('\\/', '/')
+        source_url_backup = source_url
+        source_url = update_url_query(source_url_backup, {
             'token': token,
             'expires': expiration,
             #'asn': asn,
@@ -61,16 +62,41 @@ class StreamingCommunityIE(InfoExtractor):
             'Origin': iframe_origin,
         }
 
-        formats, subs = self._extract_m3u8_formats_and_subtitles(
-            source_url,
-            video_id, 
-            ext='mp4',
-            entry_protocol='m3u8_native',
-            m3u8_id='hls',
-            headers=hls_headers,
-            fatal=False,
-            live=False
-        )
+        try:
+            formats, subs = self._extract_m3u8_formats_and_subtitles(
+                source_url,
+                video_id,
+                ext='mp4',
+                entry_protocol='m3u8_native',
+                m3u8_id='hls',
+                headers=hls_headers,
+                fatal=False,
+                live=False
+            )
+            if formats == []:
+                raise Exception("No formats found")
+        except Exception as e:
+            self.to_screen(f'Error extracting formats with source_url: {source_url}, error: {e}')
+            self.to_screen('Attempting to extract formats with alternative method ...')
+            source_url = update_url_query(source_url_backup, {
+                'token': token,
+                'expires': expiration,
+                #'asn': asn,
+                'scz': '1',
+                "lang": "it",
+                #"h": "1",
+            })
+
+            formats, subs = self._extract_m3u8_formats_and_subtitles(
+                source_url,
+                video_id,
+                ext='mp4',
+                entry_protocol='m3u8_native',
+                m3u8_id='hls',
+                headers=hls_headers,
+                fatal=False,
+                live=False
+            )
 
         hls_headers["Referer"] = hls_headers["Origin"]+"/"
 
